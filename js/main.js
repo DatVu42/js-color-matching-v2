@@ -15,7 +15,7 @@ import {
 
 // Global variables
 let selections = []
-let gameStatus = GAME_STATUS.PENDING
+let gameStatus = GAME_STATUS.PLAYING
 const timer = createTimer({
   seconds: GAME_TIME,
   onChange: handleTimerChange,
@@ -71,6 +71,7 @@ function handleColorClick(liElement) {
     if (isWin) {
       setTimerText('YOU WIN! 🥇')
       showPlayAgainButton()
+      timer.clear()
     }
 
     selections = []
@@ -84,11 +85,13 @@ function handleColorClick(liElement) {
     selections[0].classList.remove('active')
     selections[1].classList.remove('active')
     selections = []
-    gameStatus = GAME_STATUS.PLAYING
+    if (gameStatus !== GAME_STATUS.BLOCKING) {
+      gameStatus = GAME_STATUS.PLAYING
+    }
   }, 500)
 }
 
-function attachEventForLiElement() {
+function attachEventForUlElement() {
   const ulElement = getUlElement()
   if (!ulElement) return
   ulElement.addEventListener('click', (event) => {
@@ -101,7 +104,7 @@ function attachEventForLiElement() {
 function resetGame() {
   // reset global variables
   selections = []
-  gameStatus = GAME_STATUS.PENDING
+  gameStatus = GAME_STATUS.PLAYING
 
   // reset DOM
   // - change timer text
@@ -136,7 +139,7 @@ function startTimer() {
 
 ;(() => {
   initColorList()
-  attachEventForLiElement()
+  attachEventForUlElement()
   attachEventForPlayAgainButton()
   startTimer()
 })()
