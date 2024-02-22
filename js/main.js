@@ -23,11 +23,13 @@ const timer = createTimer({
 })
 
 function handleTimerChange(second) {
-  console.log('change', second)
+  const fullSecond = `0${second}s`.slice(-3)
+  setTimerText(fullSecond)
 }
 
 function handleTimerFinish() {
-  console.log('Finish')
+  setTimerText('Game Over! 😭')
+  showPlayAgainButton()
 }
 
 // TODOs
