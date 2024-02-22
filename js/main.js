@@ -1,10 +1,15 @@
 import { GAME_STATUS, PAIRS_COUNT } from './constants.js'
-import { getColorElementList, getInActiveColorList, getUlElement } from './selectors.js'
-import { getRandomColorPairs, setTimerText, showPlayAgainButton } from './utils.js'
+import {
+  getColorElementList,
+  getInActiveColorList,
+  getPlayAgainButton,
+  getUlElement,
+} from './selectors.js'
+import { getRandomColorPairs, hidePlayAgainButton, setTimerText, showPlayAgainButton } from './utils.js'
 
 // Global variables
 let selections = []
-let gameStatus = GAME_STATUS.PLAYING
+let gameStatus = GAME_STATUS.PENDING
 
 // TODOs
 // 1. Generating colors using https://github.com/davidmerfield/randomColor
@@ -43,8 +48,8 @@ function handleColorClick(liElement) {
     // check win
     const isWin = getInActiveColorList().length === 0
     if (isWin) {
-        setTimerText('YOU WIN! 🥇')
-        showPlayAgainButton()
+      setTimerText('YOU WIN! 🥇')
+      showPlayAgainButton()
     }
 
     selections = []
@@ -72,7 +77,37 @@ function attachEventForLiElement() {
   })
 }
 
+function resetGame() {
+  // reset global variables
+  selections = []
+  gameStatus = GAME_STATUS.PENDING
+
+  // reset DOM
+  // - change timer text
+  // - hide play again button
+  // - remove class active for all LI element
+  setTimerText('')
+  hidePlayAgainButton()
+
+  const liList = getColorElementList()
+  if (!liList) return
+  for(const liElement of liList) {
+    liElement.classList.remove('active')
+  }
+
+  // generate a new color collection
+  initColorList()
+}
+
+function attachEventForPlayAgainButton() {
+  const playAgainButton = getPlayAgainButton()
+  if (!playAgainButton) return
+
+  playAgainButton.addEventListener('click', resetGame)
+}
+
 ;(() => {
   initColorList()
   attachEventForLiElement()
+  attachEventForPlayAgainButton()
 })()
