@@ -1,6 +1,6 @@
 import { GAME_STATUS, PAIRS_COUNT } from './constants.js'
-import { getColorElementList, getUlElement } from './selectors.js'
-import { getRandomColorPairs } from './utils.js'
+import { getColorElementList, getInActiveColorList, getUlElement } from './selectors.js'
+import { getRandomColorPairs, setTimerText, showPlayAgainButton } from './utils.js'
 
 // Global variables
 let selections = []
@@ -40,8 +40,13 @@ function handleColorClick(liElement) {
   const isMatch = firstColor === secondColor
 
   if (isMatch) {
-    console.log('Match', gameStatus, selections)
     // check win
+    const isWin = getInActiveColorList().length === 0
+    if (isWin) {
+        setTimerText('YOU WIN! 🥇')
+        showPlayAgainButton()
+    }
+
     selections = []
     return
   }
@@ -55,7 +60,6 @@ function handleColorClick(liElement) {
     selections = []
     gameStatus = GAME_STATUS.PLAYING
   }, 500)
-  console.log('Not match', gameStatus, selections)
 }
 
 function attachEventForLiElement() {
