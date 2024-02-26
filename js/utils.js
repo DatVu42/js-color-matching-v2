@@ -1,3 +1,5 @@
+import { getTimerElement } from './selectors.js'
+
 function shuffle(arr) {
   if (!Array.isArray(arr)) return
 
@@ -23,4 +25,40 @@ export const getRandomColorPairs = (count) => {
   const fullColorList = [...colorList, ...colorList]
 
   return shuffle(fullColorList)
+}
+
+export function createTimer({ seconds, onChange, onFinish }) {
+  let intervalId = null
+
+  function start() {
+    clear()
+
+    let currentSecond = seconds
+    intervalId = setInterval(() => {
+      onChange?.(currentSecond)
+
+      currentSecond--
+
+      if (currentSecond < 0) {
+        clear()
+        onFinish?.()
+      }
+    }, 500)
+  }
+
+  function clear() {
+    clearInterval(intervalId)
+  }
+
+  return {
+    start,
+    clear,
+  }
+}
+
+export function setTimerText(text) {
+  const timerElement = getTimerElement()
+  if (timerElement) {
+    timerElement.textContent = text
+  }
 }

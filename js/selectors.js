@@ -6,7 +6,7 @@ export function getTimerElement() {
   return document.querySelector('.game .game__timer')
 }
 
-export function getPlayAgainButton() {
+export function getGameButton() {
   return document.querySelector('.game .game__button')
 }
 
