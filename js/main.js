@@ -1,4 +1,5 @@
-import { GAME_STATUS, GAME_TIME, PAIRS_COUNT } from './constants.js'
+import { GAME_STATUS, PAIRS_COUNT } from './constants.js'
+import { getRandomColorPairs } from './utils.js';
 
 // Global variables
 let selections = []
@@ -12,3 +13,4 @@ let gameStatus = GAME_STATUS.PENDING
 // 4. Add timer
 // 5. Handle replay click
 
+console.log(getRandomColorPairs(PAIRS_COUNT));
