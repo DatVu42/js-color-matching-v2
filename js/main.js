@@ -1,6 +1,11 @@
 import { GAME_STATUS, GAME_TIME, PAIRS_COUNT } from './constants.js'
-import { getColorElementList, getGameButton, getInActiveColorList, getUlElement } from './selectors.js'
-import { createTimer, getRandomColorPairs, setTimerText } from './utils.js'
+import {
+  getColorElementList,
+  getGameButton,
+  getInActiveColorList,
+  getUlElement,
+} from './selectors.js'
+import { createTimer, disableGameButton, enableGameButton, getRandomColorPairs, setTimerText } from './utils.js'
 
 // Global variables
 let selections = []
@@ -16,7 +21,10 @@ function handleTimerChange(second) {
 }
 
 function handleTimerFinish() {
-  console.log('finish')
+  timer.clear()
+  setTimerText('Game Over! 😭')
+  gameStatus = GAME_STATUS.FINISHED
+  enableGameButton()
 }
 
 // TODOs
@@ -57,15 +65,14 @@ function handleColorClick(liElement) {
     // check win
     const isWin = getInActiveColorList().length === 0
     if (isWin) {
-      setTimerText('YOU WIN 🥇')
+      setTimerText('YOU WIN! 🥇')
       timer.clear()
-      // TODO: enable Play Again button
+      enableGameButton()
     }
 
     selections = []
     return
   }
-
   // not match
   gameStatus = GAME_STATUS.BLOCKING
   setTimeout(() => {
@@ -87,13 +94,36 @@ function attachEventForUlElement() {
   })
 }
 
+function resetGame() {
+  // reset global variables
+  selections = []
+  gameStatus = GAME_STATUS.PENDING
+
+  // start timer
+  timer.start()
+
+  // reset DOM
+  // - disable Play button
+  // - remove class active on all LI elements
+  disableGameButton()
+
+  const liList = getColorElementList()
+  if (!liList) return
+  for (let liElement of liList) {
+    liElement.classList.remove('active')
+  }
+
+  // generate a new color collection
+  initColorList()
+}
+
 function attachEventForPlayButton() {
   const playButton = getGameButton()
   if (!playButton) return
 
   playButton.addEventListener('click', () => {
+    resetGame()
     attachEventForUlElement()
-    timer.start()
   })
 }
 

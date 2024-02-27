@@ -1,4 +1,4 @@
-import { getTimerElement } from './selectors.js'
+import { getGameButton, getTimerElement } from './selectors.js'
 
 function shuffle(arr) {
   if (!Array.isArray(arr)) return
@@ -63,3 +63,12 @@ export function setTimerText(text) {
   }
 }
 
+export function disableGameButton() {
+  const gameButton = getGameButton()
+  if (gameButton) gameButton.setAttribute('disabled', '')
+}
+
+export function enableGameButton() {
+  const gameButton = getGameButton()
+  if (gameButton) gameButton.removeAttribute('disabled')
+}
