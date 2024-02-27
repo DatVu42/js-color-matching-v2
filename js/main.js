@@ -1,5 +1,5 @@
 import { GAME_STATUS, GAME_TIME, PAIRS_COUNT } from './constants.js'
-import { getColorElementList, getGameButton, getUlElement } from './selectors.js'
+import { getColorElementList, getGameButton, getInActiveColorList, getUlElement } from './selectors.js'
 import { createTimer, getRandomColorPairs, setTimerText } from './utils.js'
 
 // Global variables
@@ -41,9 +41,8 @@ function initColorList() {
 }
 
 function handleColorClick(liElement) {
-  const shouldBlockClick = [GAME_STATUS.FINISHED || GAME_STATUS.BLOCKING].includes(gameStatus)
+  const shouldBlockClick = [GAME_STATUS.FINISHED, GAME_STATUS.BLOCKING].includes(gameStatus)
   if (!liElement || shouldBlockClick) return
-  console.log('start',selections, gameStatus);
 
   liElement.classList.add('active')
   selections.push(liElement)
@@ -55,22 +54,26 @@ function handleColorClick(liElement) {
   const isMatch = firstColor === secondColor
 
   if (isMatch) {
-    console.log('Match')
-    selections = []
+    // check win
+    const isWin = getInActiveColorList().length === 0
+    if (isWin) {
+      setTimerText('YOU WIN 🥇')
+      timer.clear()
+      // TODO: enable Play Again button
+    }
 
+    selections = []
     return
   }
 
+  // not match
   gameStatus = GAME_STATUS.BLOCKING
   setTimeout(() => {
     selections[0].classList.remove('active')
     selections[1].classList.remove('active')
     selections = []
-    if (gameStatus !== GAME_STATUS.BLOCKING) {
-      gameStatus = GAME_STATUS.PLAYING
-    }
-  }, 5000000)
-  console.log('end',selections, gameStatus);
+    gameStatus = GAME_STATUS.PLAYING
+  }, 500)
 }
 
 function attachEventForUlElement() {
@@ -84,18 +87,17 @@ function attachEventForUlElement() {
   })
 }
 
-// function attachEventForPlayButton() {
-//   const playButton = getGameButton()
-//   if (!playButton) return
+function attachEventForPlayButton() {
+  const playButton = getGameButton()
+  if (!playButton) return
 
-//   playButton.addEventListener('click', () => {
-//     attachEventForUlElement()
-//     timer.start()
-//   })
-// }
+  playButton.addEventListener('click', () => {
+    attachEventForUlElement()
+    timer.start()
+  })
+}
 
 ;(() => {
   initColorList()
-  // attachEventForPlayButton()
-  attachEventForUlElement()
+  attachEventForPlayButton()
 })()

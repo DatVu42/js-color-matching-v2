@@ -62,3 +62,4 @@ export function setTimerText(text) {
     timerElement.textContent = text
   }
 }
+
