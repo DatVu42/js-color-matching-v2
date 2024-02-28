@@ -9,7 +9,7 @@ import { createTimer, disableGameButton, enableGameButton, getRandomColorPairs, 
 
 // Global variables
 let selections = []
-let gameStatus = GAME_STATUS.PENDING
+let gameStatus = GAME_STATUS.PLAYING
 const timer = createTimer({
   seconds: GAME_TIME,
   onChange: handleTimerChange,
@@ -68,18 +68,21 @@ function handleColorClick(liElement) {
       setTimerText('YOU WIN! 🥇')
       timer.clear()
       enableGameButton()
+      gameStatus = GAME_STATUS.FINISHED
     }
-
     selections = []
     return
   }
+
   // not match
   gameStatus = GAME_STATUS.BLOCKING
   setTimeout(() => {
     selections[0].classList.remove('active')
     selections[1].classList.remove('active')
     selections = []
-    gameStatus = GAME_STATUS.PLAYING
+    if (gameStatus !== GAME_STATUS.FINISHED) {
+      gameStatus = GAME_STATUS.PLAYING
+    }
   }, 500)
 }
 
@@ -89,18 +92,15 @@ function attachEventForUlElement() {
 
   ulElement.addEventListener('click', (event) => {
     if (event.target.tagName !== 'LI') return
-
+    event.stopImmediatePropagation()
     handleColorClick(event.target)
   })
 }
 
-function resetGame() {
+function handleRePlayGame() {
   // reset global variables
   selections = []
-  gameStatus = GAME_STATUS.PENDING
-
-  // start timer
-  timer.start()
+  gameStatus = GAME_STATUS.PLAYING
 
   // reset DOM
   // - disable Play button
@@ -109,7 +109,7 @@ function resetGame() {
 
   const liList = getColorElementList()
   if (!liList) return
-  for (let liElement of liList) {
+  for (const liElement of liList) {
     liElement.classList.remove('active')
   }
 
@@ -122,8 +122,12 @@ function attachEventForPlayButton() {
   if (!playButton) return
 
   playButton.addEventListener('click', () => {
-    resetGame()
+    if (gameStatus === GAME_STATUS.FINISHED) {
+      handleRePlayGame()
+    }
+
     attachEventForUlElement()
+    timer.start()
   })
 }
 
