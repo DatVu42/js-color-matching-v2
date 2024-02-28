@@ -43,7 +43,7 @@ export function createTimer({ seconds, onChange, onFinish }) {
         clear()
         onFinish?.()
       }
-    }, 500)
+    }, 1000)
   }
 
   function clear() {
@@ -71,4 +71,9 @@ export function disableGameButton() {
 export function enableGameButton() {
   const gameButton = getGameButton()
   if (gameButton) gameButton.removeAttribute('disabled')
+}
+
+export function setGameButtonTittle(text) {
+  const gameButton = getGameButton()
+  if (gameButton) gameButton.textContent = text
 }

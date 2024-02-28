@@ -1,11 +1,12 @@
 import { GAME_STATUS, GAME_TIME, PAIRS_COUNT } from './constants.js'
 import {
+  getColorBackground,
   getColorElementList,
   getGameButton,
   getInActiveColorList,
   getUlElement,
 } from './selectors.js'
-import { createTimer, disableGameButton, enableGameButton, getRandomColorPairs, setTimerText } from './utils.js'
+import { createTimer, disableGameButton, enableGameButton, getRandomColorPairs, setGameButtonTittle, setTimerText } from './utils.js'
 
 // Global variables
 let selections = []
@@ -16,8 +17,9 @@ const timer = createTimer({
   onFinish: handleTimerFinish,
 })
 
-function handleTimerChange(second) {
-  setTimerText(second)
+function handleTimerChange(seconds) {
+  const fullSeconds = `0${seconds}s`.slice(-3)
+  setTimerText(fullSeconds)
 }
 
 function handleTimerFinish() {
@@ -25,6 +27,7 @@ function handleTimerFinish() {
   setTimerText('Game Over! 😭')
   gameStatus = GAME_STATUS.FINISHED
   enableGameButton()
+  setGameButtonTittle('Play Again')
 }
 
 // TODOs
@@ -62,6 +65,10 @@ function handleColorClick(liElement) {
   const isMatch = firstColor === secondColor
 
   if (isMatch) {
+    // change background color
+    const backgroundElement = getColorBackground()
+    if (backgroundElement) backgroundElement.style.backgroundColor = firstColor
+
     // check win
     const isWin = getInActiveColorList().length === 0
     if (isWin) {
@@ -69,6 +76,7 @@ function handleColorClick(liElement) {
       timer.clear()
       enableGameButton()
       gameStatus = GAME_STATUS.FINISHED
+      setGameButtonTittle('Play Again')
     }
     selections = []
     return
@@ -103,9 +111,8 @@ function handleRePlayGame() {
   gameStatus = GAME_STATUS.PLAYING
 
   // reset DOM
-  // - disable Play button
   // - remove class active on all LI elements
-  disableGameButton()
+  // - generate a new color collection
 
   const liList = getColorElementList()
   if (!liList) return
@@ -113,7 +120,6 @@ function handleRePlayGame() {
     liElement.classList.remove('active')
   }
 
-  // generate a new color collection
   initColorList()
 }
 
@@ -126,8 +132,9 @@ function attachEventForPlayButton() {
       handleRePlayGame()
     }
 
-    attachEventForUlElement()
     timer.start()
+    attachEventForUlElement()
+    disableGameButton()
   })
 }
 
